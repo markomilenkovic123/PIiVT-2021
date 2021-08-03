@@ -1,7 +1,7 @@
 import CategoryModel from "./model";
 import * as mysql2 from "mysql2/promise";
 import { raw } from "express";
-import IModelAdapterOptions from "../../common/IModelAdapterOptions";
+import IModelAdapterOptions from "../../common/IModelAdapterOptions.interface";
 
 class CategoryService {
     private db: mysql2.Connection;
@@ -47,7 +47,7 @@ class CategoryService {
             return null;
         }
 
-        return await this.adaptModel(rows[0])
+        return await this.adaptModel(rows[0] )
     }
 }
 

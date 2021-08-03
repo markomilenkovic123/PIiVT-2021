@@ -1,4 +1,4 @@
-export default class IModelAdapterOptions {
+export default interface IModelAdapterOptions {
     loadParent: boolean;
     loadChildren: boolean;
 }

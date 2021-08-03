@@ -3,7 +3,8 @@ import * as cors from 'cors';
 import Config from './config/dev';
 import CategoryRouter from './components/category/router';
 import * as mysql2 from "mysql2/promise";
-import IApplicationResources from './common/IApplicationResources';
+import IApplicationResources from './common/IApplicationResources.interface';
+import Router from './router';
 
 async function main() {
     const application: express.Application = express();
@@ -34,7 +35,9 @@ async function main() {
         dotfiles: Config.server.static.dotfiles,
     }));
 
-    CategoryRouter.setupRoutes(application, resouces);
+    Router.setupRoutes(application, resouces, [
+        new CategoryRouter(),
+    ])
 
     application.use((req, res) => {
         res.sendStatus(404);
