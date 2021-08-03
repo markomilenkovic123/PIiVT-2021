@@ -24,19 +24,19 @@ class CategoryController {
             return;
         }
 
-        const category: CategoryModel|null|IErrorResponse = await this.categoryService.getById(categoryId);
+        const data: CategoryModel|null|IErrorResponse = await this.categoryService.getById(categoryId);
 
-        if (category === null) {
+        if (data === null) {
             res.sendStatus(404);
             return;
         }
 
-        if (category instanceof CategoryModel) {
-            res.send(category);
+        if (data instanceof CategoryModel) {
+            res.send(data);
             return;
         }
 
-        res.status(500).send(category);
+        res.status(500).send(data);
     }
 }
 
