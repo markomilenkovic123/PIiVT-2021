@@ -20,7 +20,8 @@ application.use(Config.server.static.route, express.static(Config.server.static.
 const categoryService: CategoryService = new CategoryService();
 const categoryController: CategoryController = new CategoryController(categoryService);
 
-application.use("/category", categoryController.getAll.bind(categoryController))
+application.get("/category", categoryController.getAll.bind(categoryController))
+application.get("/category/:id", categoryController.getById.bind(categoryController))
 
 application.use((req, res) => {
     res.sendStatus(404);
