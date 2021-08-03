@@ -1,4 +1,4 @@
-import IConfig from "./IConfig.interface";
+import IConfig from "../common/IConfig.interface";
 
 const Config: IConfig = {
     server: {
@@ -20,8 +20,8 @@ const Config: IConfig = {
     database: {
         host: "localhost",
         user: "root",
-        password: "aplikacija",
         database: "aplikacija",
+        password: "root",
         port: 3306,
         charset: "utf8",
         timezone: "+01:00",
