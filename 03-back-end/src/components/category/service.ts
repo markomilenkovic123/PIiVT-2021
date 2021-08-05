@@ -33,12 +33,12 @@ class CategoryService extends BaseService<CategoryModel> {
 
     }
 
-    public async getAll(): Promise<CategoryModel[]|IErrorResponse> {
-        return await this.getAllFromTable<CategoryModelAdapterOptions>("category", {});
+    public async getAll(options: Partial<CategoryModelAdapterOptions> = {}): Promise<CategoryModel[]|IErrorResponse> {
+        return await this.getAllFromTable<CategoryModelAdapterOptions>("category", options);
     }
 
-    public async getById(categoryId: number): Promise<CategoryModel|null|IErrorResponse> {
-        return await this.getByIdFromTable<CategoryModelAdapterOptions>("category", categoryId, {});
+    public async getById(categoryId: number, options: Partial<CategoryModelAdapterOptions> = {}): Promise<CategoryModel|null|IErrorResponse> {
+        return await this.getByIdFromTable<CategoryModelAdapterOptions>("category", categoryId, options);
     }
 
     public async add(data: IAddCategory): Promise<CategoryModel|IErrorResponse> {
@@ -48,7 +48,7 @@ class CategoryService extends BaseService<CategoryModel> {
                 .then(async result => {
                     const insertInfo: any = result[0];
                     const newCategoryId: number = +(insertInfo?.insertId);
-                    resolve(await this.getById(newCategoryId));
+                    resolve(await this.getById(newCategoryId, {}));
                 })
                 .catch(error => {
                     resolve({
@@ -60,7 +60,7 @@ class CategoryService extends BaseService<CategoryModel> {
         });
     }
 
-    public async edit(categoryId: number, data: IEditCategory): Promise<CategoryModel|IErrorResponse|null> {
+    public async edit(categoryId: number, data: IEditCategory, options: Partial<CategoryModelAdapterOptions> = {}): Promise<CategoryModel|IErrorResponse|null> {
         const result = await this.getById(categoryId);
         
         if (result === null) {
@@ -84,7 +84,7 @@ class CategoryService extends BaseService<CategoryModel> {
 
             this.db.execute(sql, [data.name, data.imagePath ?? null, data.description, categoryId])
                 .then(async result => {
-                    resolve(await this.getById(categoryId));
+                    resolve(await this.getById(categoryId, options));
                 })
                 .catch(error => {
                     resolve({
