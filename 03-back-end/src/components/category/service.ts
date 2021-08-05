@@ -6,6 +6,7 @@ import IErrorResponse from "../../common/IErrorResponse.interface";
 import { IAddCategory } from "./dto/AddCategory";
 import { resolve } from "path/posix";
 import BaseService from "../../services/baseService";
+import { IEditCategory } from "./dto/EditCategory";
 
 class CategoryService extends BaseService<CategoryModel> {
     protected async adaptModel(row: any, options: Partial<IModelAdapterOptions> = { loadChildren: false, loadParent: false }): Promise<CategoryModel> {
@@ -49,9 +50,45 @@ class CategoryService extends BaseService<CategoryModel> {
                         errorCode: error?.errno,
                         errorMessage: error?.sqlMessage
                     })
-                })
+                });
 
-        })
+        });
+    }
+
+    public async edit(categoryId: number, data: IEditCategory): Promise<CategoryModel|IErrorResponse|null> {
+        const result = await this.getById(categoryId);
+        console.log(result);
+        if (result === null) {
+            return null;
+        }
+
+        if (!(result instanceof CategoryModel)) {
+            return result;
+        }
+
+        return new Promise<CategoryModel|IErrorResponse>(async resolve => {
+            const sql: string = `
+                UPDATE 
+                    category 
+                SET 
+                    name = ?, 
+                    image_path = ?, 
+                    description = ?
+                WHERE
+                    category_id = ?;`
+
+            this.db.execute(sql, [data.name, data.imagePath ?? null, data.description, categoryId])
+                .then(async result => {
+                    resolve(await this.getById(categoryId));
+                })
+                .catch(error => {
+                    resolve({
+                        errorCode: error?.errno,
+                        errorMessage: error?.sqlMessage
+                    })
+                });
+
+        });
     }
 }
 
