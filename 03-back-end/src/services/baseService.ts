@@ -16,12 +16,9 @@ export default abstract class BaseService<ReturnModel extends IModel> {
 
     protected abstract adaptModel(row: any, options: Partial<IModelAdapterOptions>): Promise<ReturnModel>;
 
-    protected async getAllFromTable(
+    protected async getAllFromTable<AdapterOptions extends IModelAdapterOptions>(
         tableName: string, 
-        options: Partial<IModelAdapterOptions> = {
-            loadParent: false,
-            loadChildren: false,
-        }
+        options: Partial<AdapterOptions> = {}
     ): Promise<ReturnModel[] | IErrorResponse> {
         return new Promise<ReturnModel[]|IErrorResponse>(async (resolve) => {
             const sql: string = `SELECT * FROM ${tableName};`
@@ -47,13 +44,10 @@ export default abstract class BaseService<ReturnModel extends IModel> {
         });
     }
 
-    protected async getByIdFromTable(
+    protected async getByIdFromTable<AdapterOptions extends IModelAdapterOptions>(
         tableName: string,
         id: number,
-        options: Partial<IModelAdapterOptions> = {
-            loadChildren: true,
-            loadParent: true,
-        }
+        options: Partial<AdapterOptions> = {}
     ): Promise<ReturnModel|null|IErrorResponse> {
         try {
             const sql: string = `SELECT * FROM ${tableName} WHERE ${tableName}_id = ?;`;
@@ -76,14 +70,11 @@ export default abstract class BaseService<ReturnModel extends IModel> {
         }
     }
 
-    protected async getAllByFieldName(
+    protected async getAllByFieldName<AdapterOptions extends IModelAdapterOptions>(
         tableName: string, 
         fieldName: string, 
         fieldValue: any, 
-        options: Partial<IModelAdapterOptions> = {
-            loadParent: false,
-            loadChildren: false,
-        }
+        options: Partial<AdapterOptions> = {}
     ): Promise<ReturnModel[]|IErrorResponse> {
         return new Promise<ReturnModel[]|IErrorResponse>(async (resolve) => {
             let sql: string = `SELECT * FROM ${tableName} WHERE ${fieldName} = ?;`

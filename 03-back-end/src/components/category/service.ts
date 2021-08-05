@@ -8,19 +8,24 @@ import { resolve } from "path/posix";
 import BaseService from "../../services/baseService";
 import { IEditCategory } from "./dto/EditCategory";
 
+class CategoryModelAdapterOptions implements IModelAdapterOptions {
+    loadParentCategory: boolean = false;
+    loadSubcategories: boolean = false;
+}
+
 class CategoryService extends BaseService<CategoryModel> {
-    protected async adaptModel(row: any, options: Partial<IModelAdapterOptions> = { loadChildren: false, loadParent: false }): Promise<CategoryModel> {
+    protected async adaptModel(row: any, options: Partial<CategoryModelAdapterOptions> = {}): Promise<CategoryModel> {
         const item: CategoryModel = new CategoryModel();
         item.categoryId = row?.category_id;
         item.name = row?.name;
         item.description = row?.description;
         item.imagePath = row?.image_path;
 
-        if (options.loadParent) {
+        if (options.loadParentCategory) {
             
         }
 
-        if (options.loadChildren) {
+        if (options.loadSubcategories) {
             
         }
 
@@ -29,11 +34,11 @@ class CategoryService extends BaseService<CategoryModel> {
     }
 
     public async getAll(): Promise<CategoryModel[]|IErrorResponse> {
-        return await this.getAllFromTable("category");
+        return await this.getAllFromTable<CategoryModelAdapterOptions>("category", {});
     }
 
     public async getById(categoryId: number): Promise<CategoryModel|null|IErrorResponse> {
-        return await this.getByIdFromTable("category", categoryId);
+        return await this.getByIdFromTable<CategoryModelAdapterOptions>("category", categoryId, {});
     }
 
     public async add(data: IAddCategory): Promise<CategoryModel|IErrorResponse> {
@@ -57,7 +62,7 @@ class CategoryService extends BaseService<CategoryModel> {
 
     public async edit(categoryId: number, data: IEditCategory): Promise<CategoryModel|IErrorResponse|null> {
         const result = await this.getById(categoryId);
-        console.log(result);
+        
         if (result === null) {
             return null;
         }
