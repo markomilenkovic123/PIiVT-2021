@@ -1,9 +1,9 @@
-import IModel from "../common/IModel.interface";
+import IModel from "./IModel.interface";
 import * as mysql2 from "mysql2/promise";
-import IModelAdapterOptions from "../common/IModelAdapterOptions.interface";
-import IErrorResponse from "../common/IErrorResponse.interface";
-import IApplicationResources from "../common/IApplicationResources.interface";
-import IServices from "../common/IServices.interface";
+import IModelAdapterOptions from "./IModelAdapterOptions.interface";
+import IErrorResponse from "./IErrorResponse.interface";
+import IApplicationResources from "./IApplicationResources.interface";
+import IServices from "./IServices.interface";
 
 export default abstract class BaseService<ReturnModel extends IModel> {
     private resources: IApplicationResources;

@@ -8,6 +8,8 @@ import Router from './router';
 import ManufacturerRouter from './components/manufacturer/router';
 import CategoryService from './components/category/service';
 import ManufacturerService from './components/manufacturer/service';
+import AdministratorSecvice from './components/administrator/service';
+import AdministratorRouter from './components/administrator/router';
 
 async function main() {
     const application: express.Application = express();
@@ -33,7 +35,8 @@ async function main() {
 
     resouces.services = {
         categoryService: new CategoryService(resouces),
-        manufacturerService: new ManufacturerService(resouces)
+        manufacturerService: new ManufacturerService(resouces),
+        administratorService: new AdministratorSecvice(resouces), 
     }
 
     application.use(Config.server.static.route, express.static(Config.server.static.path, {
@@ -47,6 +50,7 @@ async function main() {
     Router.setupRoutes(application, resouces, [
         new CategoryRouter(),
         new ManufacturerRouter(),
+        new AdministratorRouter(),
     ]);
 
     application.use((req, res) => {

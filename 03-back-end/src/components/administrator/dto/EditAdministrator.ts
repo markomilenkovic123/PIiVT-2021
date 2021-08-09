@@ -1,13 +1,13 @@
 import Ajv from 'ajv';
 
-interface IAddAdministrator {
+interface IEditAdministrator {
     username: string;
     password: string;
 }
 
 const ajv = new Ajv();
 
-const IAddAdministratorValidator = ajv.compile({
+const IEditAdministratorValidator = ajv.compile({
     type: "object",
     properties: {
         username: {
@@ -22,11 +22,10 @@ const IAddAdministratorValidator = ajv.compile({
         },
     },
     required: [
-        "username",
-        "password"
+        
     ],
     additionalProperties: false
 });
 
-export { IAddAdministrator };
-export { IAddAdministratorValidator };
+export { IEditAdministrator };
+export { IEditAdministratorValidator };

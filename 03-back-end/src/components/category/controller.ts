@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import BaseController from "../../common/BaseController";
-import IApplicationResources from "../../common/IApplicationResources.interface";
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import { IAddCategory, IAddCategoryValidator } from "./dto/AddCategory";
 import { IEditCategory, IEditCategoryValidator } from "./dto/EditCategory";
 import CategoryModel from "./model";
-import CategoryService from "./service"
 
 class CategoryController extends BaseController {
     async getAll(req: Request, res: Response, next: NextFunction) {
