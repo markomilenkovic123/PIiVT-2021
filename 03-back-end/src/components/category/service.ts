@@ -5,7 +5,7 @@ import IModelAdapterOptions from "../../common/IModelAdapterOptions.interface";
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import { IAddCategory } from "./dto/AddCategory";
 import { resolve } from "path/posix";
-import BaseService from "../../services/baseService";
+import BaseService from "../../services/BaseService";
 import { IEditCategory } from "./dto/EditCategory";
 
 class CategoryModelAdapterOptions implements IModelAdapterOptions {

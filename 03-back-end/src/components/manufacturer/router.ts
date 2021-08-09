@@ -6,8 +6,7 @@ import ManufacturerService from './service';
 
 export default class ManufacturerRouter implements IRouter {
     public setupRoutes(application: express.Application, resources: IApplicationResources) {
-        const manufacturerService: ManufacturerService = new ManufacturerService(resources.databaseConnection);
-        const manufacturerController: ManufacturerController = new ManufacturerController(manufacturerService);
+        const manufacturerController: ManufacturerController = new ManufacturerController(resources);
 
         application.get("/manufacturer", manufacturerController.getAll.bind(manufacturerController));
         application.get("/manufacturer/:id", manufacturerController.getById.bind(manufacturerController));

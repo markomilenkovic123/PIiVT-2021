@@ -1,6 +1,6 @@
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import IModelAdapterOptions from "../../common/IModelAdapterOptions.interface";
-import BaseService from "../../services/baseService";
+import BaseService from "../../services/BaseService";
 import { IAddManufacturer } from "./dto/AddManufacturer";
 import { IEditManufacturer } from "./dto/EditManufacturer";
 import ManufacturerModel from "./model";

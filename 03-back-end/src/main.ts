@@ -6,12 +6,15 @@ import * as mysql2 from "mysql2/promise";
 import IApplicationResources from './common/IApplicationResources.interface';
 import Router from './router';
 import ManufacturerRouter from './components/manufacturer/router';
+import CategoryService from './components/category/service';
+import ManufacturerService from './components/manufacturer/service';
 
 async function main() {
     const application: express.Application = express();
 
     application.use(cors());
     application.use(express.json());
+
 
     const resouces: IApplicationResources = {
         databaseConnection: await mysql2.createConnection({
@@ -23,10 +26,15 @@ async function main() {
             charset: Config.database.charset,
             timezone: Config.database.timezone,
             supportBigNumbers: true,
-        })
+        }),
     }; 
 
     resouces.databaseConnection.connect();
+
+    resouces.services = {
+        categoryService: new CategoryService(resouces),
+        manufacturerService: new ManufacturerService(resouces)
+    }
 
     application.use(Config.server.static.route, express.static(Config.server.static.path, {
         index: Config.server.static.index,

@@ -1,19 +1,15 @@
 import { Request, Response, NextFunction } from "express";
+import BaseController from "../../common/BaseController";
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import { IAddManufacturer, IAddManufacturerValidator } from "./dto/AddManufacturer";
 import { IEditManufacturer, IEditManufacturerValidator } from "./dto/EditManufacturer";
 import ManufacturerModel from "./model";
 import ManufacturerService from "./service";
 
-class ManufacturerController {
-    private manufacturerService: ManufacturerService;
-
-    constructor(manufacturerService: ManufacturerService) {
-        this.manufacturerService = manufacturerService;
-    }
+class ManufacturerController extends BaseController {
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
-        const manufacturers = await this.manufacturerService.getAll();
+        const manufacturers = await this.services.manufacturerService.getAll();
         res.send(manufacturers);
     }
 
@@ -26,7 +22,7 @@ class ManufacturerController {
             return;
         }
 
-        const data: ManufacturerModel|null|IErrorResponse = await this.manufacturerService.getById(manufacturerId);
+        const data: ManufacturerModel|null|IErrorResponse = await this.services.manufacturerService.getById(manufacturerId);
 
         if (data === null) {
             res.sendStatus(404);
@@ -49,7 +45,7 @@ class ManufacturerController {
             return;
         }
 
-        const result = await this.manufacturerService.add(data as IAddManufacturer);
+        const result = await this.services.manufacturerService.add(data as IAddManufacturer);
         res.send(result);
     }
 
@@ -67,7 +63,7 @@ class ManufacturerController {
             return;
         }
 
-        const result = await this.manufacturerService.edit(manufacturerId, data as IEditManufacturer);
+        const result = await this.services.manufacturerService.edit(manufacturerId, data as IEditManufacturer);
         if (result === null) {
             res.sendStatus(404);
             return;
@@ -85,7 +81,7 @@ class ManufacturerController {
             return;
         }
 
-        res.send(await this.manufacturerService.deleteById(manufacturerId));
+        res.send(await this.services.manufacturerService.deleteById(manufacturerId));
     }
 }
 
