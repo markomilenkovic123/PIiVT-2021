@@ -11,6 +11,10 @@ interface IAddProfile {
     status: string; //enum
 }
 
+interface IUploadPhoto {
+    imagePath: string;  
+}
+
 const ajv = new Ajv();
 
 const IAddProfileValidator = ajv.compile({
@@ -55,3 +59,4 @@ const IAddProfileValidator = ajv.compile({
 
 export { IAddProfile };
 export { IAddProfileValidator };
+export { IUploadPhoto }

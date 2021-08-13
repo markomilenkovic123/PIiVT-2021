@@ -10,12 +10,32 @@ import CategoryService from './components/category/service';
 import ManufacturerService from './components/manufacturer/service';
 import AdministratorSecvice from './components/administrator/service';
 import AdministratorRouter from './components/administrator/router';
+import ProfileService from './components/profile/service';
+import ProfileRouter from './components/profile/routes';
+import * as fileUpload from 'express-fileupload';
 
 async function main() {
     const application: express.Application = express();
 
     application.use(cors());
     application.use(express.json());
+    // application.use(express.urlencoded({
+    //     extended: false
+    // })); 
+    application.use(fileUpload({
+        limits: {
+            fileSize: Config.fileUpload.maxSize,
+            files: Config.fileUpload.maxFiles,
+        },
+        tempFileDir: Config.fileUpload.temporaryDirectory,
+        uploadTimeout: Config.fileUpload.timeout,
+        useTempFiles: true,
+        safeFileNames: true,
+        preserveExtension: true,
+        createParentPath: true,
+        abortOnLimit: true,
+         
+    }))
 
 
     const resouces: IApplicationResources = {
@@ -37,6 +57,7 @@ async function main() {
         categoryService: new CategoryService(resouces),
         manufacturerService: new ManufacturerService(resouces),
         administratorService: new AdministratorSecvice(resouces), 
+        profileServices: new ProfileService(resouces),
     }
 
     application.use(Config.server.static.route, express.static(Config.server.static.path, {
@@ -51,6 +72,7 @@ async function main() {
         new CategoryRouter(),
         new ManufacturerRouter(),
         new AdministratorRouter(),
+        new ProfileRouter(),
     ]);
 
     application.use((req, res) => {
