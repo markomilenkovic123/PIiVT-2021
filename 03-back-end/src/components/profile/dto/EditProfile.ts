@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-interface IAddProfile {
+interface IEditProfile {
     name: string;
     description: string | null;
     pricePerUnit: number;
@@ -9,13 +9,10 @@ interface IAddProfile {
     status: string; //enum
 }
 
-interface IUploadPhoto {
-    imagePath: string;  
-}
 
 const ajv = new Ajv();
 
-const IAddProfileValidator = ajv.compile({
+const IEditProfileValidator = ajv.compile({
     type: "object",
     properties: {
         name: {
@@ -48,13 +45,10 @@ const IAddProfileValidator = ajv.compile({
     required: [
         "name",
         "pricePerUnit",
-        "manufacturerId",
-        "categoryId",
         "status",
     ],
     additionalProperties: false
 });
 
-export { IAddProfile };
-export { IAddProfileValidator };
-export { IUploadPhoto }
+export { IEditProfile };
+export { IEditProfileValidator };

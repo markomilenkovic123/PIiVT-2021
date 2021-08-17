@@ -9,6 +9,7 @@ import { UploadedFile } from "express-fileupload";
 import sizeOf from "image-size";
 import * as path from "path";
 import * as sharp from "sharp";
+import { IEditProfile, IEditProfileValidator } from "./dto/EditProfile";
 
 class  ProfileController extends BaseController {
 
@@ -166,8 +167,26 @@ class  ProfileController extends BaseController {
         } catch (err) {
             res.status(400).send(err?.message)
         }
+    }
 
-        
+    public async edit(req: Request, res: Response, next: NextFunction) {
+        const id: number = +(req.params?.id);
+
+        if (id <= 0) {
+            return res.sendStatus(400);
+        }
+
+        if (!IEditProfileValidator(req.body)) {
+            return res.status(400).send(IEditProfileValidator.errors);
+        }
+
+        const result = await this.services.profileServices.edit(id, req.body as IEditProfile);
+
+        if (result === null) {
+            return res.sendStatus(404);
+        }
+
+        res.send(result)
     }
 }
 

@@ -3,6 +3,7 @@ import ProfileModel from "./model";
 import IModelAdapterOptions from "../../common/IModelAdapterOptions.interface";
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import { IAddProfile, IUploadPhoto } from "./dto/AddProfile";
+import { IEditProfile } from "./dto/EditProfile";
 
 class ProfileModelAdapterOptions implements IModelAdapterOptions {
     loadCategory: boolean = false;
@@ -95,6 +96,67 @@ class ProfileService extends BaseService<ProfileModel> {
                     });
                 })
             })
+    }
+
+    public async edit(profileId: number, data: IEditProfile): Promise<ProfileModel|null|IErrorResponse> {
+        return new Promise<ProfileModel|null|IErrorResponse>(async resolve => {
+            const currentProfile = await this.getById(profileId,{});
+
+            if (currentProfile === null) {
+                resolve(null);
+                return;
+            }
+
+            const rollbackAndResolve = async (error) => {
+                await this.db.rollback();
+                resolve({
+                    errorCode: error?.errno,
+                    errorMessage: error?.sqlMessage,
+                });
+            }
+
+            this.db.beginTransaction()
+                .then(async () => {
+                    const sql: string = `
+                                        UPDATE
+                                            profile
+                                        SET 
+                                            name = ?,
+                                            description = ?,
+                                            price_per_unit_area = ?,
+                                            status = ? 
+                                        WHERE
+                                            profile_id = ?
+                                        `;
+
+                    await this.db.execute(
+                        sql,
+                        [
+                            data.name,
+                            data.description,
+                            data.pricePerUnit,
+                            data.status,
+                            profileId,
+                        ]
+                    )
+                    .catch((error) => {
+                        rollbackAndResolve({
+                            errno: error?.errno,
+                            sqlMessage: "Part 1: " + error?.sqlMessage,
+                        });
+                    })
+                })
+                .then(async () => {
+                    resolve(await this.getById(profileId,{}));
+                })
+                .catch(async error => {
+                    await this.db.rollback();
+                    resolve({
+                        errorCode: error?.errno,
+                        errorMessage: error?.sqlMessage
+                    })
+                })
+        });
     }
 }
 

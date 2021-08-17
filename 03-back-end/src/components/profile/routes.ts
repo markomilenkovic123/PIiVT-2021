@@ -10,5 +10,6 @@ export default class ProfileRouter implements IRouter {
         application.get("/profile", profileController.getAll.bind(profileController));
         application.get("/profile/:id", profileController.getById.bind(profileController));
         application.post("/profile/", profileController.add.bind(profileController));
+        application.put("/profile/:id", profileController.edit.bind(profileController));
     }
 }
