@@ -188,6 +188,23 @@ class  ProfileController extends BaseController {
 
         res.send(result)
     }
+
+    public async delete(req: Request, res: Response, next: NextFunction) {
+        const id: number = +(req.params?.id);
+
+        if (id <= 0) {
+            return res.sendStatus(400);
+        }
+
+        const data: ProfileModel|null|IErrorResponse = await this.services.profileServices.getById(id);
+
+        if (data === null) {
+            res.sendStatus(404);
+            return;
+        }
+
+        res.send( await this.services.profileServices.delete(id));
+    }
 }
 
 export default ProfileController;
