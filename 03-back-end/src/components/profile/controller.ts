@@ -205,6 +205,48 @@ class  ProfileController extends BaseController {
 
         res.send( await this.services.profileServices.delete(id));
     }
+
+    public async deleteProfilePhoto(req: Request, res: Response, next: NextFunction) {
+        const profileId: number = +(req.params?.aid);
+        const photoId: number = +(req.params?.pid);
+
+        if (profileId <= 0 || photoId <= 0) {
+            return res.sendStatus(400);
+        }
+
+        const result = await this.services.profileServices.deleteProfilePhoto(profileId, photoId);
+
+        if (result === null) {
+            res.sendStatus(404);
+            return;
+        }
+
+        res.send(result);
+    }
+
+    public async addProfilePhotos(req: Request, res: Response, next: NextFunction) {
+        const profileId: number = +(req.params?.id);
+
+        if (profileId <= 0) {
+            return res.sendStatus(400);
+        }
+
+        const data = await this.services.profileServices.getById(profileId);
+        
+        if (data === null) {
+            res.sendStatus(404);
+            return;
+        }
+
+        const uploadedPhotos = await this.uploadFiles(req, res);
+
+        if (uploadedPhotos.length === 0) {
+            return;
+        }
+
+        res.send(await this.services.profileServices.addProfilePhotos(profileId, uploadedPhotos));
+
+    }
 }
 
 export default ProfileController;

@@ -292,6 +292,86 @@ class ProfileService extends BaseService<ProfileModel> {
             
         }
     }
+
+    public async deleteProfilePhoto(profileId: number, photoId: number): Promise<IErrorResponse|null> {
+        return new Promise<IErrorResponse|null>(async resolve => {
+            const profile = await this.getById(profileId,{loadPhotos: true});
+
+            if (profile === null) {
+                resolve(null);
+                return;
+            }
+
+            const filteredPhotos = (profile as ProfileModel).photos.filter(p => p.photoId === photoId)
+
+            if (filteredPhotos.length === 0){
+                resolve(null);
+                return;
+            } 
+
+            const photo = filteredPhotos[0];
+
+            this.db.execute(
+                `DELETE FROM photo WHERE photo_id = ?`,
+                [photo.photoId]
+            )
+            .then(() => {
+                this.deleteProfilePhotosAndResizedVersions([
+                    // photo.imagePath
+                ])
+
+                resolve({
+                    errorCode: 0,
+                    errorMessage: "Photo deleted"
+                })
+            })
+            .catch((error) => resolve({
+                errorCode: error?.errno,
+                errorMessage: error?.sqlMessage
+            }))
+
+        })
+    }
+
+    public async addProfilePhotos(profileId: number, uploadPhotos: IUploadPhoto[]): Promise<ProfileModel|IErrorResponse|null> {
+        return new Promise<ProfileModel|IErrorResponse|null>(async resolve => {
+            const profile = await this.getById(profileId,{loadPhotos: true});
+
+            if (profile === null) {
+                resolve(null);
+                return;
+            }
+
+            this.db.beginTransaction()
+                .then(() => {
+                    const promises = [];
+
+                    for (const uploadPhoto of uploadPhotos) {
+                        promises.push(
+                            this.db.execute(
+                                `INSERT photo SET profile_id = ?, image_path = ?;`,
+                                [profileId, uploadPhoto.imagePath,]
+                            ),
+                        );
+                    }
+
+                    Promise.all(promises)
+                        .then(async () => {
+                            await this.db.commit();
+                            resolve(await this.services.profileServices.getById(profileId, {
+                            }))
+                        })
+                        .catch(async error => {
+                            await this.db.rollback();
+                            resolve({
+                                errorCode: error?.errno,
+                                errorMessage: error?.sqlMessage
+                            })
+                        })
+                });
+                resolve(await this.services.profileServices.getById(profileId, {}))  
+            })
+    }
 }
 
 
