@@ -11,9 +11,6 @@ export default interface IConfig {
             index: boolean,
         },
     },
-    logger: {
-        path: string,
-    },
     database: {
         host: string,
         port: number,
@@ -29,5 +26,19 @@ export default interface IConfig {
         temporaryDirectory: string; 
         timeout: number;
         uploadDestinationDirectory: string;
+        photos: {
+            limits: {
+                minWidth: number;
+                maxWidth: number;
+                minHeight: number;
+                maxHeight: number;
+            },
+            resizes: {
+                sufix: string;
+                width: number;
+                height: number;
+                fit: "cover"|"contain";
+            }[]
+        }
     }
 }
