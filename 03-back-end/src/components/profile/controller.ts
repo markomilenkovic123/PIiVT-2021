@@ -7,6 +7,8 @@ import Config from "../../config/dev";
 import {v4} from "uuid";
 import { UploadedFile } from "express-fileupload";
 import sizeOf from "image-size";
+import * as path from "path";
+import * as sharp from "sharp";
 
 class  ProfileController extends BaseController {
 
@@ -40,36 +42,65 @@ class  ProfileController extends BaseController {
     }
 
     private isPhotoValid(file: UploadedFile): { isOk: boolean; message?: string; } {
-        const size = sizeOf(file.tempFilePath);
-        const limits = Config.fileUpload.photos.limits
+        try {
+            const size = sizeOf(file.tempFilePath);
+            const limits = Config.fileUpload.photos.limits
 
-        if (size.width < limits.minWidth) {
-            return {
-                isOk: false,
-                message: "The image must have a width of at least " + limits.minWidth + "px",
+            if (size.width < limits.minWidth) {
+                return {
+                    isOk: false,
+                    message: "The image must have a width of at least " + limits.minWidth + "px",
+                }
             }
-        }
-        if (size.height < limits.minHeight) {
-            return {
-                isOk: false,
-                message: "The image must have a height of at least " + limits.minHeight + "px",
+            if (size.height < limits.minHeight) {
+                return {
+                    isOk: false,
+                    message: "The image must have a height of at least " + limits.minHeight + "px",
+                }
             }
-        }
-        if (size.width > limits.maxWidth) {
-            return {
-                isOk: false,
-                message: "The image must have a width of maximum " + limits.maxWidth + "px",
+            if (size.width > limits.maxWidth) {
+                return {
+                    isOk: false,
+                    message: "The image must have a width of maximum " + limits.maxWidth + "px",
+                }
             }
-        }
-        if (size.height > limits.maxHeight) {
-            return {
-                isOk: false,
-                message: "The image must have a height of maximum " + limits.maxHeight + "px",
+            if (size.height > limits.maxHeight) {
+                return {
+                    isOk: false,
+                    message: "The image must have a height of maximum " + limits.maxHeight + "px",
+                }
             }
-        }
 
-        return {
-            isOk:true
+            return {
+                isOk:true
+            }
+        } catch (error) {
+            return {
+                isOk: false,
+                message: "Bad file format",
+            }
+        }
+    }
+
+    private async resizeUploadedPhoto(imagePath: string) {
+        const pathPaths = path.parse(imagePath);
+
+        const directory = pathPaths.dir;
+        const filename = pathPaths.name;
+        const extensions = pathPaths.ext;
+
+        for (const resizeSpecification of Config.fileUpload.photos.resizes) {
+            const resizedImagePath = directory + "/" +
+                                    filename + 
+                                    resizeSpecification.sufix + 
+                                    extensions;
+            await sharp(imagePath).resize({
+                width: resizeSpecification.width,
+                height: resizeSpecification.height,
+                fit: resizeSpecification.fit,
+                background: {r: 255, g: 255, b: 255, alpha: 1.0,},
+                withoutEnlargement: true,
+            }).toFile(resizedImagePath)
         }
     }
 
@@ -103,6 +134,9 @@ class  ProfileController extends BaseController {
                 randomString + originalName;
 
             await file.mv(imagePath);
+
+            await this.resizeUploadedPhoto(imagePath);
+            
             uploadedPhotos.push({
                 imagePath: imagePath,
             });

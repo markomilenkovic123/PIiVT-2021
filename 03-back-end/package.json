@@ -19,6 +19,7 @@
     "express-fileupload": "^1.2.1",
     "image-size": "^1.0.0",
     "mysql2": "^2.2.5",
+    "sharp": "^0.28.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@types/express-fileupload": "^1.1.7",
     "@types/image-size": "^0.8.0",
     "@types/node": "^16.4.8",
+    "@types/sharp": "^0.28.5",
     "eslint": "^7.32.0",
     "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.8",
