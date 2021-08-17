@@ -118,16 +118,22 @@ class  ProfileController extends BaseController {
             return;
         }
 
-        const data = JSON.parse(req.body?.data);
+        try {
+            const data = JSON.parse(req.body?.data);
 
-        if (!IAddProfileValidator(data)) {
-            res.status(400).send(IAddProfileValidator.errors);
-            return;
+            if (!IAddProfileValidator(data)) {
+                res.status(400).send(IAddProfileValidator.errors);
+                return;
+            }
+
+            const result =  await this.services.profileServices.add(data as IAddProfile, uploadedPhotos);
+
+            res.send(result);
+        } catch (err) {
+            res.status(400).send(err?.message)
         }
 
-        const result =  await this.services.profileServices.add(data as IAddProfile, uploadedPhotos);
-
-        res.send(result);
+        
     }
 }
 
