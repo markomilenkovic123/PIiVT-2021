@@ -13,6 +13,8 @@ import AdministratorRouter from './components/administrator/router';
 import ProfileService from './components/profile/service';
 import ProfileRouter from './components/profile/routes';
 import * as fileUpload from 'express-fileupload';
+import UserService from './components/user/service';
+import UserRouter from './components/user/router';
 
 async function main() {
     const application: express.Application = express();
@@ -58,6 +60,7 @@ async function main() {
         manufacturerService: new ManufacturerService(resouces),
         administratorService: new AdministratorSecvice(resouces), 
         profileServices: new ProfileService(resouces),
+        userService: new UserService(resouces),
     }
 
     application.use(Config.server.static.route, express.static(Config.server.static.path, {
@@ -73,6 +76,7 @@ async function main() {
         new ManufacturerRouter(),
         new AdministratorRouter(),
         new ProfileRouter(),
+        new UserRouter(),
     ]);
 
     application.use((req, res) => {
