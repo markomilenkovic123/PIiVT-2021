@@ -4,11 +4,11 @@ import ManufacturerModel from "../manufacturer/model";
 
 class Photo implements IModel {
     photoId: number;
-    image_path: string;
+    imagePath: string;
 }
 
 class ProfileModel implements IModel {
-    prifileId: number;
+    profileId: number;
     name: string;
     description: string | null;
     pricePerUnit: number;

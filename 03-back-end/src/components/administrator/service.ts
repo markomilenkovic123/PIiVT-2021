@@ -17,6 +17,7 @@ class AdministratorSecvice extends BaseService<AdministratorModel> {
         item.administratorId = data?.administrator_id;
         item.username = data?.username;
         item.passwordHash = data?.password_hash;
+        item.createdAt = new Date(data?.created_at);
 
         return item;
     }
@@ -81,6 +82,29 @@ class AdministratorSecvice extends BaseService<AdministratorModel> {
                 })
             });
         });
+    }
+
+    public async delete(administratorId: number): Promise<IErrorResponse> {
+        return new Promise<IErrorResponse>(async resolve => {
+            this.db.execute(
+                `DELETE FROM administrator WHERE administrator_id = ?;`,
+                [
+                    administratorId
+                ]
+            )
+            .then(res => {
+                resolve({
+                    errorCode: 0,
+                    errorMessage: `Deleted ${(res as any[])[0]?.affectedRows} records.`
+                });
+            })
+            .catch(error => {
+                resolve({
+                    errorCode: error?.errno,
+                    errorMessage: error?.sqlMessage
+                })
+            });
+        })
     }
 }
 

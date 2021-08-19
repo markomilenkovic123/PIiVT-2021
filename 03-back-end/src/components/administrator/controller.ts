@@ -12,7 +12,7 @@ class AdministratorController extends BaseController {
     }
 
     public async getById(req: Request, res: Response, next: NextFunction) {
-        const id: string = req.params.id
+        const id = +(req.params.id);
         const administratorId: number = +id;
 
         if (administratorId <= 0) {
@@ -50,7 +50,7 @@ class AdministratorController extends BaseController {
 
     public async edit(req: Request, res: Response, next: NextFunction) {
         const data = req.body;
-        const id: string = req.params.id
+        const id = +(req.params.id);
         const administratorId: number = +id
 
         if (administratorId <= 0) {
@@ -70,6 +70,14 @@ class AdministratorController extends BaseController {
         }
 
         res.send(result);
+    }
+
+    public async delete(req: Request, res: Response, next: NextFunction) {
+        const id = +(req.params.id);    
+
+        if (id <= 0) return res.status(400).send("The ID value cannot be smaller than 1");
+
+        res.send(await this.services.administratorService.delete(id));
     }
 }
 

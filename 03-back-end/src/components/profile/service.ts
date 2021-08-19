@@ -1,5 +1,5 @@
 import BaseService from "../../common/BaseService";
-import ProfileModel from "./model";
+import ProfileModel, { ProfilePhoto } from "./model";
 import IModelAdapterOptions from "../../common/IModelAdapterOptions.interface";
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import { IAddProfile, IUploadPhoto } from "./dto/AddProfile";
@@ -18,7 +18,7 @@ class ProfileService extends BaseService<ProfileModel> {
     protected async adaptModel(data: any, options: Partial<ProfileModelAdapterOptions> = {}): Promise<ProfileModel> {
         const item: ProfileModel = new ProfileModel();
 
-        item.prifileId = +(data?.profile_id);
+        item.profileId = +(data?.profile_id);
         item.name = data?.name;
         item.description = data?.description;
         item.pricePerUnit = +(data?.price_per_unit);
@@ -29,17 +29,37 @@ class ProfileService extends BaseService<ProfileModel> {
 
         item.category = null;
         item.manufacturer = null;
-        item.photos = [];
+        // item.photos = [];
+
+        if (options.loadPhotos) {
+            item.photos = await this.getAllPhotosByArticleId(item.profileId);
+        }
 
         return item;
+    }
+
+    private async getAllPhotosByArticleId(articleId: number): Promise<ProfilePhoto[]> {
+        const sql = `SELECT photo_id, image_path FROM photo WHERE profile_id = ?;`;
+        const [ rows ] = await this.db.execute(sql, [ articleId ]);
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+            return [];
+        }
+
+        return rows.map(row => {
+            return {
+                photoId: +(row?.photo_id),
+                imagePath: row?.image_path,
+            }
+        });
     }
 
     public async getAll(): Promise<ProfileModel[] | IErrorResponse> {
         return await this.getAllFromTable("profile");
     }
 
-    public async getById(profileId: number, options: Partial<ProfileModelAdapterOptions> = {}): Promise<ProfileModel | null | IErrorResponse> {
-        return await this.getByIdFromTable("profile", profileId);
+    public async getById(profileId: number, options: Partial<ProfileModelAdapterOptions> = {loadPhotos: true}): Promise<ProfileModel | null | IErrorResponse> {
+        return await this.getByIdFromTable("profile", profileId, options);
     }
 
     public async add(data: IAddProfile, uploadPhotos: IUploadPhoto[]): Promise<ProfileModel | IErrorResponse> {
@@ -296,7 +316,6 @@ class ProfileService extends BaseService<ProfileModel> {
     public async deleteProfilePhoto(profileId: number, photoId: number): Promise<IErrorResponse|null> {
         return new Promise<IErrorResponse|null>(async resolve => {
             const profile = await this.getById(profileId,{loadPhotos: true});
-
             if (profile === null) {
                 resolve(null);
                 return;
