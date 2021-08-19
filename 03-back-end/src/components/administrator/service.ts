@@ -30,6 +30,16 @@ class AdministratorSecvice extends BaseService<AdministratorModel> {
         return await this.getByIdFromTable("administrator", administratorId);
     }
 
+    public async getByUsername(username: string): Promise<AdministratorModel|null> {
+        const administrator =  await this.getAllByFieldName("administrator", "username", username, {});
+
+        if (!Array.isArray(administrator) || administrator.length === 0) {
+            return null;
+        }
+
+        return administrator[0];
+    }
+
     public async add(data: IAddAdministrator): Promise<AdministratorModel|IErrorResponse> {
         return new Promise<AdministratorModel|IErrorResponse>(async resolve => {
             const passwordHash = bcrypt.hashSync(data.password, 11)

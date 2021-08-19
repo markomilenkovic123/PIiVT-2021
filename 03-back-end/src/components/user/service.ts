@@ -35,6 +35,16 @@ class UserService extends BaseService<UserModel> {
         return await this.getByIdFromTable("user", userId);
     }
 
+    public async getByEmail(email: string): Promise<UserModel|null> {
+        const user =  await this.getAllByFieldName("user", "email", email, {});
+
+        if (!Array.isArray(user) || user.length === 0) {
+            return null;
+        }
+
+        return user[0];
+    }
+
     public async add(data: IAddUser): Promise<UserModel|IErrorResponse> {
         return new Promise<UserModel|IErrorResponse>(async resolve => {
             const passwordHash = bcrypt.hashSync(data.password, 11)
