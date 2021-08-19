@@ -40,5 +40,15 @@ export default interface IConfig {
                 fit: "cover"|"contain";
             }[]
         }
+    },
+    mail: {
+        hostname: string;
+        port: number;
+        secure: boolean;
+        username: string;
+        password: string;
+        fromEmail: string;
+        debug: boolean;
+        
     }
 }

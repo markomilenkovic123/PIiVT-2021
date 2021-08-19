@@ -18,6 +18,7 @@ class UserService extends BaseService<UserModel> {
         item.username = data?.username;
         item.passwordHash = data?.password_hash;
         item.createdAt = new Date(data?.created_at);
+        item.email = data?.email;
 
         if (options.loadOrders) {
             
@@ -38,8 +39,8 @@ class UserService extends BaseService<UserModel> {
         return new Promise<UserModel|IErrorResponse>(async resolve => {
             const passwordHash = bcrypt.hashSync(data.password, 11)
 
-            const sql: string = "INSERT user SET username = ?, password_hash = ?;"
-            this.db.execute(sql, [data.username, passwordHash])
+            const sql: string = "INSERT user SET username = ?, password_hash = ?, email = ?;"
+            this.db.execute(sql, [data.username, passwordHash, data.email])
                 .then(async res => {
                     const newUserId: number = +((res[0] as any)?.insertId);
                     resolve(await this.getById(newUserId));
@@ -72,10 +73,11 @@ class UserService extends BaseService<UserModel> {
                     user 
                 SET 
                     username = ?,
-                    password_hash = ?
+                    password_hash = ?,
+                    email = ?,
                 WHERE
                     user_id = ?;`
-            this.db.execute(sql, [data.username, passwordHash, userId])
+            this.db.execute(sql, [data.username, passwordHash, data.email, userId])
             .then(async result => {
                 resolve(await this.getById(userId));
             })

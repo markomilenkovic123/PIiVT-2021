@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 interface IAddUser {
     username: string;
     password: string;
+    email: string;
 }
 
 const ajv = new Ajv();
@@ -20,10 +21,16 @@ const IAddUserValidator = ajv.compile({
             minLength: 8,
             maxLength: 255,
         },
+        email: {
+            type: "string",
+            minLength: 8,
+            maxLength: 255,
+        },
     },
     required: [
         "username",
-        "password"
+        "password",
+        "email",
     ],
     additionalProperties: false
 });

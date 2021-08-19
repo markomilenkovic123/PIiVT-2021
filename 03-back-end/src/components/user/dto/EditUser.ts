@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 interface IEditUser {
     username: string;
     password: string;
+    email: string;
 }
 
 const ajv = new Ajv();
@@ -16,6 +17,11 @@ const IEditUserValidator = ajv.compile({
             maxLength: 32,
         },
         password: {
+            type: "string",
+            minLength: 8,
+            maxLength: 255,
+        },
+        email: {
             type: "string",
             minLength: 8,
             maxLength: 255,

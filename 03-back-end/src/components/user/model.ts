@@ -5,6 +5,7 @@ class UserModel implements IModel {
     username: string;
     passwordHash: string;
     createdAt: Date;
+    email: string;
 }
 
 export default UserModel;
