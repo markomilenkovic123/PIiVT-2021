@@ -16,6 +16,8 @@ import * as fileUpload from 'express-fileupload';
 import UserService from './components/user/service';
 import UserRouter from './components/user/router';
 import AuthRouter from './components/auth/router';
+import CartService from './components/cart/service';
+import CartRouter from './components/cart/reouter';
 
 async function main() {
     const application: express.Application = express();
@@ -62,6 +64,7 @@ async function main() {
         administratorService: new AdministratorSecvice(resouces), 
         profileServices: new ProfileService(resouces),
         userService: new UserService(resouces),
+        cartService: new CartService(resouces),
     }
 
     application.use(Config.server.static.route, express.static(Config.server.static.path, {
@@ -79,6 +82,7 @@ async function main() {
         new ProfileRouter(),
         new UserRouter(),
         new AuthRouter(),
+        new CartRouter(),
     ]);
 
     application.use((req, res) => {
