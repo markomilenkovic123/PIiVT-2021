@@ -31,7 +31,7 @@ export default class CartRouter implements IRouter {
         application.get(
             "/cart/order/my", 
             AuthMiddleware.getVerifier("user"),
-            cartController.makeOrder.bind(cartController)
+            cartController.getAllOrdersForCurrentUser.bind(cartController)
         );
         application.get(
             "/order", 
@@ -39,7 +39,7 @@ export default class CartRouter implements IRouter {
             cartController.getAllOrders.bind(cartController)
         );
         application.get(
-            "/user/:uid/order/  ", 
+            "/user/:uid/order/", 
             AuthMiddleware.getVerifier("administrator"),
             cartController.getAllOrdersByUserId.bind(cartController)
         );
