@@ -67,7 +67,7 @@ export default class CartController extends BaseController {
         }
 
         res.send(
-            await this.services.cartService.addProfileToLatestCartByUserId(
+            await this.services.cartService.setProfileToLatestCartByUserId(
                 req.authorized?.id,
                 data.profileId,
                 data.quantity,
@@ -79,8 +79,9 @@ export default class CartController extends BaseController {
 
     public async makeOrder(req: Request, res: Response, next: NextFunction) {
         if (!this.isCallerUser(req, res)) return;
+        const data = req.body;
 
-        const order = await this.services.cartService.makeOrder(req.authorized?.id);
+        const order = await this.services.cartService.makeOrder(req.authorized?.id, data);
 
         if (!(order instanceof CartModel)) {
             return res.status(400).send(order);
@@ -91,7 +92,7 @@ export default class CartController extends BaseController {
 
     public async getAllOrdersForCurrentUser(req: Request, res: Response, next: NextFunction) {
         if (!this.isCallerUser(req, res)) return;
-
+        
         res.send(await this.services.cartService.getAllOrdersByUserId(req.authorized?.id));
     }
 
@@ -101,7 +102,7 @@ export default class CartController extends BaseController {
 
     public async getAllOrdersByUserId(req: Request, res: Response, next: NextFunction) {
         const userId: number = +(req.params?.uid);
-
+console.log(userId)
         if (userId < 0) {
             return res.status(400).send("Invalid user ID");
         }

@@ -1,3 +1,4 @@
+import { Console } from "console";
 import BaseService from "../../common/BaseService";
 import IErrorResponse from "../../common/IErrorResponse.interface";
 import IModelAdapterOptions from "../../common/IModelAdapterOptions.interface";
@@ -127,7 +128,7 @@ export default class CartService extends BaseService<CartModel> {
                 cart.created_at DESC
             LIMIT 1;`,
             [ userId, ]
-        );
+        )
 
         if (!Array.isArray(rows) || rows.length === 0) {
             return await this.add(userId) as CartModel;
@@ -149,13 +150,13 @@ export default class CartService extends BaseService<CartModel> {
         width: number
     ): Promise<CartModel> {
         const cart = await this.getLatestCartByUserId(userId, {loadProfiles: true});
-        console.log(cart);
 
-        const filteredProfiles = cart.profiles.filter(a => a.profileId === profileId);
-        const filteredProfileHeights = cart.profiles.filter(a => a.height === height);
-        const filteredProfileWidths = cart.profiles.filter(a => a.width === width);
+        const filteredProfiles =        cart.profiles.filter(a => a.profileId === profileId);
+        const filteredProfileHeights =  cart.profiles.filter(a => a.height === height);
+        const filteredProfileWidths =   cart.profiles.filter(a => a.width === width);
 
-        if (filteredProfiles.length === 1 && filteredProfileHeights.length === 1 && filteredProfileWidths.length === 1) {
+
+        if (filteredProfiles.length >= 1 && filteredProfileHeights.length >= 1 && filteredProfileWidths.length >= 1) {
             await this.db.execute(
                 `UPDATE
                     cart_profile
@@ -163,20 +164,26 @@ export default class CartService extends BaseService<CartModel> {
                     quantity = quantity + ?
                 WHERE
                     cart_id = ?
-                    AND profile_id = ?;`,
+                    AND profile_id = ?
+                    AND height = ?
+                    AND width = ?;`,
                 [
                     quantity,
                     cart.cartId,
-                    profileId
+                    profileId,
+                    height,
+                    width,
                 ]
             );
         } else {
             await this.db.execute(
-                `INSERT cart_profile SET quantity = ? WHERE cart_id = ? AND profile_id = ?`,
+                `INSERT cart_profile SET quantity = ?, cart_id = ?, profile_id = ?, height = ?, width = ?`,
                 [
                     quantity,
                     cart.cartId,
-                    profileId
+                    profileId,
+                    height,
+                    width,
                 ]
             );
         }
@@ -192,38 +199,43 @@ export default class CartService extends BaseService<CartModel> {
         width: number
     ): Promise<CartModel> {
         const cart = await this.getLatestCartByUserId(userId, {loadProfiles: true});
-
         const filteredProfiles = cart.profiles.filter(a => a.profileId === profileId);
         const filteredProfileHeights = cart.profiles.filter(a => a.height === height);
         const filteredProfileWidths = cart.profiles.filter(a => a.width === width);
 
-        if (filteredProfiles.length === 1 && filteredProfileHeights.length === 1 && filteredProfileWidths.length === 1) {
+        if (filteredProfiles.length >= 1 && filteredProfileHeights.length >= 1 && filteredProfileWidths.length >= 1) {
             if (quantity > 0) {
                 await this.db.execute(
-                    `UPDATE cart_profile SET quantity = ? WHERE cart_id = ? AND profile_id = ?`,
+                    `UPDATE cart_profile SET quantity = ? WHERE cart_id = ? AND profile_id = ? AND height = ? AND width = ?;`,
                     [
                         quantity,
                         cart.cartId,
-                        profileId
+                        profileId,
+                        height,
+                        width,
                     ]
                 );
             } else {
                 await this.db.execute(
-                    `DELETE FROM cart_profile WHERE cart_id = ? AND profile_id = ?`,
+                    `DELETE FROM cart_profile WHERE cart_id = ? AND profile_id = ? AND height = ? AND width = ?;`,
                     [
                         cart.cartId,
-                        profileId
+                        profileId,
+                        height,
+                        width,
                     ]
                 );
             }
         } else {
             if (quantity > 0) {
                 await this.db.execute(
-                    `INSERT cart_profile SET quantity = ? WHERE cart_id = ? AND profile_id = ?`,
+                    `INSERT cart_profile SET quantity = ?, cart_id = ?, profile_id = ?, height = ?, width = ?`,
                     [
                         quantity,
                         cart.cartId,
-                        profileId
+                        profileId,
+                        height,
+                        width,
                     ]
                 );
             }
@@ -232,7 +244,7 @@ export default class CartService extends BaseService<CartModel> {
         return await this.getById(cart.cartId, {loadProfiles: true}) as CartModel;
     }
 
-    public async makeOrder(userId: number): Promise<CartModel|IErrorResponse> {
+    public async makeOrder(userId: number, data): Promise<CartModel|IErrorResponse> {
         return new Promise<CartModel|IErrorResponse>(async resolve => {
             const cart = await this.getLatestCartByUserId(userId, {
                 loadProfiles: true,
@@ -246,8 +258,13 @@ export default class CartService extends BaseService<CartModel> {
             }
 
             this.db.execute(
-                `INSERT INTO \`order\` SET cart_id = ?;`,
-                [ cart.cartId, ],
+                `INSERT INTO \`order\` SET cart_id = ?, first_name = ?, last_name = ?, address = ?;`,
+                [
+                    cart.cartId,
+                    data.firstName,
+                    data.lastName,
+                    data.address
+                ],
             )
             .then(async () => {
                 resolve(await this.getById(cart.cartId, {
@@ -278,6 +295,7 @@ export default class CartService extends BaseService<CartModel> {
                 \`order\`.created_at DESC;`,
             [ userId ]
         );
+        console.log(rows)
 
         if (!Array.isArray(rows) || rows.length === 0) {
             return [];

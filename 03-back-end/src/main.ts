@@ -17,7 +17,7 @@ import UserService from './components/user/service';
 import UserRouter from './components/user/router';
 import AuthRouter from './components/auth/router';
 import CartService from './components/cart/service';
-import CartRouter from './components/cart/reouter';
+import CartRouter from './components/cart/router';
 
 async function main() {
     const application: express.Application = express();
